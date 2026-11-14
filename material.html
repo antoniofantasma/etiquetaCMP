@@ -1,0 +1,548 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#075B55">
+
+<title>Ficha do Material | CKTR</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #F1F5F3;
+    color: #183B38;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+header {
+    background: linear-gradient(135deg, #032F2C, #08766D);
+    padding: 24px 18px 70px;
+    text-align: center;
+    color: white;
+}
+
+.marca {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #B5FFE2;
+}
+
+header h1 {
+    margin: 15px 0 6px;
+    font-size: 28px;
+}
+
+header p {
+    color: #D0EAE2;
+    font-size: 13px;
+    margin: 0;
+}
+
+.container {
+    width: min(94%, 780px);
+    margin: -45px auto 35px;
+    position: relative;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 12px 35px rgba(0,0,0,.08);
+    margin-bottom: 18px;
+}
+
+.status {
+    display: inline-block;
+    background: #E7F7F0;
+    color: #08766D;
+    border-radius: 30px;
+    padding: 7px 13px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .6px;
+}
+
+.foto {
+    width: 100%;
+    height: 260px;
+    background: #F4F7F5;
+    border: 1px solid #E1EAE5;
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 22px 0;
+    overflow: hidden;
+}
+
+.foto img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.sem-foto {
+    color: #81948B;
+    font-size: 13px;
+    text-align: center;
+}
+
+.campo {
+    margin-bottom: 20px;
+}
+
+.campo:last-child {
+    margin-bottom: 0;
+}
+
+.rotulo {
+    color: #71877C;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.valor {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.codigo {
+    color: #075B55;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.linha {
+    height: 1px;
+    background: #E4EDE8;
+    margin: 22px 0;
+}
+
+.instrucao {
+    background: #F0F8F4;
+    border-left: 4px solid #08766D;
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 15px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #35554B;
+}
+
+.passos {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.passo {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.numero {
+    background: #08766D;
+    color: white;
+    width: 29px;
+    height: 29px;
+    min-width: 29px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.passo span {
+    padding-top: 5px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.botao {
+    display: block;
+    width: 100%;
+    background: #08766D;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    padding: 16px;
+    border-radius: 10px;
+    font-weight: 700;
+    margin-top: 20px;
+}
+
+footer {
+    text-align: center;
+    padding: 10px 15px 35px;
+    font-size: 11px;
+    color: #84988F;
+    letter-spacing: .5px;
+}
+
+.erro {
+    color: #A33D35;
+    background: #FFF0EE;
+    padding: 20px;
+    border-radius: 12px;
+    line-height: 1.6;
+}
+
+@media(max-width: 600px) {
+    header h1 {
+        font-size: 23px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    .foto {
+        height: 220px;
+    }
+
+    .codigo {
+        font-size: 26px;
+    }
+
+    .valor {
+        font-size: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="marca">CKTR SERVIÇOS</div>
+    <h1>Ficha Digital do Material</h1>
+    <p>Identificação e orientação para requisição</p>
+</header>
+
+<main class="container">
+
+    <div id="carregamento" class="card">
+        Carregando informações do material...
+    </div>
+
+    <section id="conteudo" hidden>
+
+        <div class="card">
+
+            <div class="status">
+                MATERIAL IDENTIFICADO
+            </div>
+
+            <div class="foto">
+                <img id="fotoMaterial"
+                     alt="Fotografia do material"
+                     hidden>
+
+                <div id="semFoto" class="sem-foto">
+                    Imagem não disponível
+                </div>
+            </div>
+
+            <div class="campo">
+                <div class="rotulo" id="rotuloCodigo">
+                    CÓDIGO SAP
+                </div>
+                <div class="codigo" id="codigoSAP">
+                    —
+                </div>
+            </div>
+
+            <div class="campo">
+                <div class="rotulo">
+                    DESCRIÇÃO DO MATERIAL
+                </div>
+                <div class="valor" id="descricao">
+                    —
+                </div>
+            </div>
+
+            <div class="linha"></div>
+
+            <div class="campo">
+                <div class="rotulo">
+                    IDENTIFICADOR DO MATERIAL
+                </div>
+                <div class="valor" id="idMaterial">
+                    —
+                </div>
+            </div>
+
+            <div class="campo" id="blocoLocal" hidden>
+                <div class="rotulo">
+                    LOCALIZAÇÃO INFORMADA
+                </div>
+                <div class="valor" id="localizacao">
+                    —
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="status">
+                ORIENTAÇÃO DE REQUISIÇÃO
+            </div>
+
+            <h2>Como requisitar este material?</h2>
+
+            <div class="instrucao" id="orientacao">
+                Para requisitar este item, acesse o sistema GMP,
+                aplicativo interno de controle de materiais.
+
+                Nele, você poderá consultar a quantidade individual
+                e consolidada de cada item e, posteriormente,
+                realizar a requisição do material desejado.
+            </div>
+
+            <div class="passos">
+
+                <div class="passo">
+                    <div class="numero">1</div>
+                    <span>Acesse o aplicativo interno GMP.</span>
+                </div>
+
+                <div class="passo">
+                    <div class="numero">2</div>
+                    <span>Localize o material pelo código SAP ou identificação.</span>
+                </div>
+
+                <div class="passo">
+                    <div class="numero">3</div>
+                    <span>Consulte a quantidade individual e consolidada disponível.</span>
+                </div>
+
+                <div class="passo">
+                    <div class="numero">4</div>
+                    <span>Realize a requisição seguindo o procedimento interno.</span>
+                </div>
+
+            </div>
+
+            <a id="botaoGMP"
+               class="botao"
+               href="#"
+               target="_blank"
+               rel="noopener noreferrer"
+               hidden>
+                ACESSAR SISTEMA GMP
+            </a>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    CKTR SERVIÇOS | GESTÃO DE ETIQUETAS
+</footer>
+
+<script>
+"use strict";
+
+const parametros = new URLSearchParams(window.location.search);
+
+const carregamento = document.getElementById("carregamento");
+const conteudo = document.getElementById("conteudo");
+
+const orientacaoPadrao =
+    "Para requisitar este item, acesse o sistema GMP, " +
+    "aplicativo interno de controle de materiais. " +
+    "Nele, você poderá consultar a quantidade individual " +
+    "e consolidada de cada item e, posteriormente, " +
+    "realizar a requisição do material desejado.";
+
+function texto(valor, padrao = "Não informado") {
+    if (valor === null || valor === undefined) {
+        return padrao;
+    }
+
+    const resultado = String(valor).trim();
+
+    return resultado || padrao;
+}
+
+function urlPermitida(valor) {
+    if (typeof valor !== "string" || !valor.trim()) {
+        return "";
+    }
+
+    try {
+        const url = new URL(valor, window.location.href);
+
+        if (url.protocol === "https:" || url.protocol === "http:") {
+            return url.href;
+        }
+    } catch (erro) {
+        return "";
+    }
+
+    return "";
+}
+
+function mostrarErro(mensagem) {
+    carregamento.className = "card erro";
+    carregamento.textContent = mensagem;
+    carregamento.hidden = false;
+    conteudo.hidden = true;
+}
+
+function exibirMaterial(material) {
+    if (!material || typeof material !== "object" || Array.isArray(material)) {
+        throw new Error("Dados do material inválidos.");
+    }
+
+    const id = material.ID ?? material.id;
+
+    const codigo =
+        material.CodigoSAP ??
+        material.Codigo ??
+        material.Titulo ??
+        material["Título"] ??
+        material.Codigo_Fornecedor;
+
+    const descricao =
+        material.Descricao ??
+        material.Descricao_Item;
+
+    const tipoCodigo =
+        material.TipoCodigo ?? "CÓDIGO SAP";
+
+    const foto =
+        material.Foto ??
+        material.FotoUrl ??
+        material.Foto_Item?.Full ??
+        "";
+
+    document.getElementById("codigoSAP").textContent =
+        texto(codigo);
+
+    document.getElementById("rotuloCodigo").textContent =
+        texto(tipoCodigo, "CÓDIGO SAP").toUpperCase();
+
+    document.getElementById("descricao").textContent =
+        texto(descricao);
+
+    document.getElementById("idMaterial").textContent =
+        texto(id);
+
+    document.getElementById("orientacao").textContent =
+        texto(material.Orientacao, orientacaoPadrao);
+
+    const blocoLocal = document.getElementById("blocoLocal");
+    const localizacao = texto(material.Localizacao, "");
+
+    if (localizacao) {
+        document.getElementById("localizacao").textContent =
+            localizacao;
+        blocoLocal.hidden = false;
+    } else {
+        blocoLocal.hidden = true;
+    }
+
+    const imagem = document.getElementById("fotoMaterial");
+    const semFoto = document.getElementById("semFoto");
+
+    imagem.hidden = true;
+    semFoto.hidden = false;
+    imagem.removeAttribute("src");
+
+    const enderecoFoto = urlPermitida(foto);
+
+    if (enderecoFoto) {
+        imagem.onload = function() {
+            imagem.hidden = false;
+            semFoto.hidden = true;
+        };
+
+        imagem.onerror = function() {
+            imagem.hidden = true;
+            semFoto.hidden = false;
+            semFoto.textContent = "Imagem indisponível";
+        };
+
+        imagem.src = enderecoFoto;
+    }
+
+    const botaoGMP = document.getElementById("botaoGMP");
+    const enderecoGMP = urlPermitida(material.UrlGMP);
+
+    if (enderecoGMP) {
+        botaoGMP.href = enderecoGMP;
+        botaoGMP.hidden = false;
+    } else {
+        botaoGMP.hidden = true;
+    }
+
+    carregamento.hidden = true;
+    conteudo.hidden = false;
+}
+
+async function iniciar() {
+    try {
+        const dados = parametros.get("dados");
+        const id = parametros.get("id");
+
+        let material;
+
+        if (dados) {
+            // Recebe JSON incorporado à URL.
+            material = JSON.parse(dados);
+
+        } else if (id && /^[0-9]+$/.test(id)) {
+            // Busca uma ficha JSON já publicada no GitHub.
+            const resposta = await fetch(
+                "./materiais/" + id + ".json",
+                { cache: "no-store" }
+            );
+
+            if (!resposta.ok) {
+                throw new Error(
+                    "A ficha deste material ainda não foi publicada."
+                );
+            }
+
+            material = await resposta.json();
+
+        } else {
+            throw new Error(
+                "Nenhum material foi informado. " +
+                "Escaneie um QR Code válido."
+            );
+        }
+
+        exibirMaterial(material);
+
+    } catch (erro) {
+        mostrarErro(
+            erro.message || "Não foi possível carregar o material."
+        );
+    }
+}
+
+iniciar();
+</script>
+
+</body>
+</html>
