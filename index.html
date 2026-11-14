@@ -298,9 +298,22 @@ html[data-theme="dark"] .cktr-header{background:var(--cktr-card)!important}
 .label .label-codes,.label.has-location .label-codes{height:39%!important;padding-top:calc(.6mm * var(--label-font-scale))!important}
 .label .label-foot{font-size:calc(6pt * var(--label-font-scale))!important;height:calc(3mm * var(--label-font-scale))!important}
 </style>
+
+<style id="cktr-qr-adaptativo-v21">
+/* QR adaptativo para resumos de saldo maiores: preserva integralmente os dados. */
+.label.qr-dense .label-codes,.label.qr-dense.has-location .label-codes{
+  height:var(--cktr-codes-h,50%)!important;
+}
+.label.qr-dense .qr-slot{
+  height:var(--cktr-qr,42mm)!important;
+  width:var(--cktr-qr,42mm)!important;
+  flex:none!important;
+}
+.label .qr-slot svg{display:block;shape-rendering:crispEdges;}
+</style>
 </head>
 <body>
-<header class="cktr-header"><div class="cktr-brand"><div class="cktr-wordmark" aria-label="CKTR Serviços"><strong>CKTR</strong><small>SERVIÇOS</small></div><div class="cktr-brand-name"><strong><span>CENTRAL DE ETIQUETAS</span></strong><small>Gestão de identificação e impressão · Desenvolvido por Antonio</small></div></div><div class="cktr-header-right"><span class="cktr-online"><i></i> VERSÃO 1.9v</span><div class="theme-control"><label for="tema">Tema</label><select id="tema" aria-label="Aparência do site"><option value="light">Claro</option><option value="dark">Escuro</option><option value="system">Sistema</option></select></div></div></header>
+<header class="cktr-header"><div class="cktr-brand"><div class="cktr-wordmark" aria-label="CKTR Serviços"><strong>CKTR</strong><small>SERVIÇOS</small></div><div class="cktr-brand-name"><strong><span>CENTRAL DE ETIQUETAS</span></strong><small>Gestão de identificação e impressão · Desenvolvido por Antonio</small></div></div><div class="cktr-header-right"><span class="cktr-online"><i></i> VERSÃO 2.1v</span><div class="theme-control"><label for="tema">Tema</label><select id="tema" aria-label="Aparência do site"><option value="light">Claro</option><option value="dark">Escuro</option><option value="system">Sistema</option></select></div></div></header>
 <main class="cktr-layout"><aside class="cktr-sidebar"><div class="sidebar-title"><span class="sidebar-kicker">CENTRAL DE CONTROLE</span><h2>Configurações</h2><p>Prepare o lote, ajuste as dimensões e envie para impressão.</p></div>
   <div class="section-heading"><div><span class="section-kicker">01 / CONFIGURAÇÃO</span><h2>Preparar impressão</h2></div><span class="section-note">Importação e exportação de lote</span></div>
   <section class="panel" aria-label="Planilha e impressão">
@@ -1632,9 +1645,23 @@ const labels=$('etiquetas'), input=$('arquivo'), status=$('mensagem');
 let items=[];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function msg(s,err=false){status.hidden=false;status.textContent=s;status.className='message'+(err?' error':'');}
-function qrSvg(value){const qr=new CktrQR(-1,0);qr.addData(String(value));qr.make();const n=qr.getModuleCount(), svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox',`0 0 ${n+8} ${n+8}`);svg.setAttribute('role','img');svg.setAttribute('aria-label','QR para abrir a ficha digital do material');let d='';for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(qr.isDark(y,x))d+=`M${x+4} ${y+4}h1v1h-1z`;const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',d);svg.append(path);return svg;}
+function qrSvg(value){
+  // Sem teto artificial de caracteres. Usa correção M normalmente e L quando necessário.
+  // O limite real é o padrão QR Code; para volumes maiores é preciso hospedar os dados.
+  let qr, nivel='M';
+  try {
+    qr=new CktrQR(-1,0); qr.addData(String(value)); qr.make();
+  } catch(erroM) {
+    try {
+      qr=new CktrQR(-1,1); qr.addData(String(value)); qr.make(); nivel='L';
+    } catch(erroL) {
+      throw new Error('Os dados excedem a capacidade física de um único QR Code, mesmo com a compactação e a correção mínima. Para preservar todas as informações, será necessário armazená-las em uma página ou serviço e usar um link curto.');
+    }
+  }
+  const n=qr.getModuleCount(), svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.dataset.qrEcc=nivel;svg.setAttribute('viewBox',`0 0 ${n+8} ${n+8}`);svg.setAttribute('role','img');svg.setAttribute('aria-label','QR para abrir a ficha digital do material');svg.setAttribute('shape-rendering','crispEdges');svg.dataset.qrModules=String(n+8);let d='';for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(qr.isDark(y,x))d+=`M${x+4} ${y+4}h1v1h-1z`;const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',d);svg.append(path);return svg;}
 function barcodeSvg(value){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 180 42');svg.setAttribute('aria-label','Código SAP em texto, não código de barras');const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x','90');t.setAttribute('y','27');t.setAttribute('text-anchor','middle');t.setAttribute('font-size','17');t.setAttribute('font-weight','bold');t.textContent=value;svg.append(t);return svg;}
-function makeLabel(item,qrLink){const card=document.createElement('article');card.className='label';if(item.Localizacao)card.classList.add('has-location');card.innerHTML=`<div class="label-head"><strong>CKTR | ALMOXARIFADO</strong></div><div class="label-main"><div class="material-details"><small>${esc(item.TipoCodigo === 'PN' ? 'PN:' : 'CÓDIGO SAP')}</small><b>${esc(item.CodigoSAP||'SEM CÓDIGO')}</b><small>DESCRIÇÃO</small><strong>${esc(item.Descricao||'SEM DESCRIÇÃO')}</strong></div></div>${item.Localizacao ? `<div class="label-location"><small>ENDEREÇO</small><strong>${esc(item.Localizacao)}</strong></div>` : ''}<div class="label-codes"><div class="qr-slot"></div><div class="sap-slot"></div></div><div class="label-foot"><span>ID: ${esc(item.ID)}</span></div>`;card.querySelector('.qr-slot').append(qrSvg(qrLink));const logo=document.createElement('img');logo.src='data:image/png;base64,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';logo.alt='CKTR Serviços';card.querySelector('.sap-slot').append(logo);return card;}
+function makeLabel(item,qrLink){const card=document.createElement('article');card.className='label';if(item.Localizacao)card.classList.add('has-location');card.innerHTML=`<div class="label-head"><strong>CKTR | ALMOXARIFADO</strong></div><div class="label-main"><div class="material-details"><small>${esc(item.TipoCodigo === 'PN' ? 'PN:' : 'CÓDIGO SAP')}</small><b>${esc(item.CodigoSAP||'SEM CÓDIGO')}</b><small>DESCRIÇÃO</small><strong>${esc(item.Descricao||'SEM DESCRIÇÃO')}</strong></div></div>${item.Localizacao ? `<div class="label-location"><small>ENDEREÇO</small><strong>${esc(item.Localizacao)}</strong></div>` : ''}<div class="label-codes"><div class="qr-slot"></div><div class="sap-slot"></div></div><div class="label-foot"><span>ID: ${esc(item.ID)}</span></div>`;const codigoQR=qrSvg(qrLink);card.dataset.qrModules=codigoQR.dataset.qrModules;card.querySelector('.qr-slot').append(codigoQR);const logo=document.createElement('img');logo.src='data:image/png;base64,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';logo.alt='CKTR Serviços';card.querySelector('.sap-slot').append(logo);return card;}
 function textoCampo(v){return v===null||v===undefined?'':String(v).trim();}
 function numeroSeguro(valor){
   if(typeof valor==='number')return Number.isFinite(valor)?valor:0;
@@ -1712,7 +1739,6 @@ function normalize(o){
 // QR público: dados são uma fotografia do saldo na data da exportação,
 // não uma consulta em tempo real. Publicar apenas dados corporativos autorizados.
 const MATERIAL_PAGE='https://sys-ghost-dev.github.io/etiquetaCMP/material.html';
-const QR_MAX_CHARS=550;
 function base64Url(bytes){
   let str='';
   for(let i=0;i<bytes.length;i+=8192)str+=String.fromCharCode(...bytes.subarray(i,i+8192));
@@ -1739,13 +1765,31 @@ async function linkFicha(item){
     base.a=new Date().toISOString();
   }else avisos.push('O Power Apps ainda não enviou o resumo de saldo. Atualize o OnSelect do botão de exportação.');
   const url=await codificarFicha(base);
-  if(url.length>QR_MAX_CHARS){
-    throw Error('Material ID '+item.ID+': resumo ainda excede o limite do QR ('+url.length+' caracteres). '+
-      'Existem códigos/nomes ou descrição demais para esta etiqueta. '+
-      'Nenhum dado foi removido. Gere a ficha por consulta interna autenticada para volumes maiores.');
-  }
-  if(url.length>450)avisos.push('QR com '+url.length+' caracteres: confira a leitura pela câmera antes da impressão definitiva.');
+  if(url.length>550)avisos.push('QR com '+url.length+' caracteres: sem bloqueio artificial, mas a leitura pode falhar em etiquetas pequenas. Faça um teste na Zebra antes de imprimir em lote.');
   return {url,avisos};
+}
+
+// O tamanho físico do QR é ajustado pelo número real de módulos, não apenas pela URL.
+// Zebra ZT230 203 dpi: 0,33 mm por módulo representa aproximadamente 2,6 pontos.
+// QR muito denso continua sujeito à qualidade de impressão e precisa ser testado.
+function ajustarQRs(){
+  const w=Number($('largura').value)||90, h=Number($('altura').value)||90;
+  const menor=Math.min(w,h), base=Math.min(85,Math.max(20,menor*.36));
+  let densos=0,risco=0;
+  for(const card of labels.querySelectorAll('.label')){
+    const modulos=Number(card.dataset.qrModules)||0;
+    const recomendado=Math.max(base,modulos*.33);
+    const maximo=Math.min(85,menor*.54);
+    const real=Math.min(recomendado,maximo);
+    const denso=recomendado>base+1;
+    card.classList.toggle('qr-dense',denso);
+    card.classList.toggle('qr-risk',recomendado>maximo+.1);
+    if(denso)densos++;
+    if(recomendado>maximo+.1)risco++;
+    card.style.setProperty('--cktr-qr',real.toFixed(2)+'mm');
+    card.style.setProperty('--cktr-codes-h',Math.max(39,Math.ceil((real+2.2)/h*100))+'%');
+  }
+  return {densos,risco};
 }
 
 // Ajuste proporcional da descrição para evitar corte visual na etiqueta.
@@ -1790,6 +1834,7 @@ async function render(){
       if(atual!==renderId)return;
       avisos.push(...ficha.avisos.map(a=>'ID '+item.ID+': '+a));
       const primeira=makeLabel(item,ficha.url);
+      if(primeira.querySelector('.qr-slot svg')?.dataset.qrEcc==='L')avisos.push('ID '+item.ID+': QR no limite de capacidade, com menor tolerância a danos. Verifique a leitura na etiqueta impressa.');
       for(let n=0;n<item.QuantidadeEtiquetas;n++){
         labels.append(n===0?primeira:primeira.cloneNode(true));
         count++;
@@ -1798,6 +1843,8 @@ async function render(){
     if(atual!==renderId)return;
     $('vazio').hidden=!!count;
     $('previa').hidden=!count;
+    const qrInfo=ajustarQRs();
+    if(qrInfo.risco)avisos.push(qrInfo.risco+' etiqueta(s) com QR muito denso para o tamanho escolhido: aumente o tamanho físico da etiqueta.');
     const cortes=ajustarTodasDescricoes();
     if(cortes)avisos.push(cortes+' etiqueta(s) com descrição longa demais para o espaço físico: confira a prévia antes de imprimir.');
     $('total').textContent=count+' etiqueta(s)';
@@ -1824,7 +1871,7 @@ function parseCsv(text){const out=[],rows=[];let row=[],cell='',quoted=false;for
 $('exportar').textContent='Baixar planilha CSV';$('exportar').addEventListener('click',()=>download('Etiquetas-CKTR.csv',items.length?csv():'\uFEFFID;CODIGO_SAP;TIPO_CODIGO;DESCRICAO;ID_AREA;QUANTIDADE;LOCALIZACAO\r\n','text/csv;charset=utf-8'));
 $('importar').textContent='Importar planilha CSV';input.setAttribute('accept','.csv,text/csv');$('importar').addEventListener('click',()=>input.click());input.addEventListener('change',async()=>{try{const file=input.files[0];if(!file)return;items=parseCsv(await file.text());if(!items.length)throw Error('Arquivo sem materiais.');await render();}catch(e){msg(e.message,true);}finally{input.value='';}});
 $('largura').value=90;$('altura').value=90;$('largura').min=30;$('altura').min=30;
-function sizing(){const w=Number($('largura').value),h=Number($('altura').value);if(!Number.isFinite(w)||!Number.isFinite(h)||w<30||w>420||h<30||h>420)return false;document.documentElement.style.setProperty('--label-w',w+'mm');document.documentElement.style.setProperty('--label-h',h+'mm');const scale=Math.max(.78,Math.min(3.1,Math.min(w/90,h/90)));document.documentElement.style.setProperty('--label-font-scale',scale.toFixed(3));document.documentElement.style.setProperty('--label-qr-size',Math.min(85,Math.max(20,Math.min(w,h)*.36)).toFixed(1)+'mm');$('page-size').textContent=`@page{size:${w}mm ${h}mm;margin:0}`;$('metric-size').textContent=`${w} × ${h}`;ajustarTodasDescricoes();return true;}
+function sizing(){const w=Number($('largura').value),h=Number($('altura').value);if(!Number.isFinite(w)||!Number.isFinite(h)||w<30||w>420||h<30||h>420)return false;document.documentElement.style.setProperty('--label-w',w+'mm');document.documentElement.style.setProperty('--label-h',h+'mm');const scale=Math.max(.78,Math.min(3.1,Math.min(w/90,h/90)));document.documentElement.style.setProperty('--label-font-scale',scale.toFixed(3));document.documentElement.style.setProperty('--label-qr-size',Math.min(85,Math.max(20,Math.min(w,h)*.36)).toFixed(1)+'mm');ajustarQRs();$('page-size').textContent=`@page{size:${w}mm ${h}mm;margin:0}`;$('metric-size').textContent=`${w} × ${h}`;ajustarTodasDescricoes();return true;}
 const formats={'90x90':[90,90],'70x70':[70,70],'100x100':[100,100],a4p:[210,297],a4l:[297,210],a3p:[297,420],a3l:[420,297]};
 const format=$('papel'),theme=$('tema');
 // Nova chave: não herda a configuração incorreta das versões anteriores.
@@ -1856,6 +1903,7 @@ $('largura').addEventListener('input',customSize);$('altura').addEventListener('
 function imprimirSomenteEtiquetas(){
   if(!sizing()){msg('Verifique as medidas da etiqueta.',true);return;}
   const cards=Array.from(labels.querySelectorAll('.label'));
+  const qtdQRsDeRisco=cards.filter(c=>c.classList.contains('qr-risk')).length;
   if(!cards.length){msg('Não existem etiquetas para imprimir.',true);return;}
   const w=Number($('largura').value),h=Number($('altura').value);
   const scale=Math.max(.78,Math.min(3.1,Math.min(w/90,h/90)));
@@ -1891,7 +1939,7 @@ function imprimirSomenteEtiquetas(){
   iframe.contentWindow.addEventListener('afterprint',cleanup,{once:true});
   const startPrint=()=>{if(printed)return;printed=true;iframe.contentWindow.focus();iframe.contentWindow.print();};
   Promise.all(Array.from(doc.images).map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});}))).then(()=>setTimeout(startPrint,250));
-  msg(`Impressão preparada: ${cards.length} etiqueta(s) de ${w} × ${h} mm. Confira papel e orientação na janela da impressora.`);
+  msg(`Impressão preparada: ${cards.length} etiqueta(s) de ${w} × ${h} mm. ${qtdQRsDeRisco ? 'ATENÇÃO: '+qtdQRsDeRisco+' QR(s) com densidade acima da recomendação para esta etiqueta; a leitura pelo celular não é garantida. Faça um teste antes de imprimir em lote. ' : ''}Confira papel e orientação na janela da impressora.`,qtdQRsDeRisco>0);
 }
 $('imprimir').addEventListener('click',imprimirSomenteEtiquetas);
 try{const raw=new URLSearchParams(location.search).get('dados');if(raw){const data=JSON.parse(raw);if(!Array.isArray(data))throw Error('Dados inválidos.');items=data.map(normalize).filter(x=>x.ID);render().catch(e=>msg(e.message,true));}else msg('Importe um CSV ou abra este site pelo Power Apps.');}catch(e){msg('Não foi possível receber os dados do Power Apps: '+e.message,true);}sizing();
