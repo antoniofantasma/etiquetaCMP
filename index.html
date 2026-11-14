@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; base-uri 'none'; form-action 'none'">
 <meta name="theme-color" content="#ffffff">
-<title>ETIQUETAS | SYS</title>
+<title>CKTR | Central de Etiquetas 1.9</title>
 <style>
 :root{color-scheme:light;--ink:#172a27;--muted:#506661;--line:#d4dfdb;--green:#19584d;--label-w:98.4mm;--label-h:48.4mm;--qr:22.5mm;font:16px system-ui,"Segoe UI",sans-serif}
 *{box-sizing:border-box}
@@ -283,9 +283,24 @@ html[data-theme="dark"] .cktr-header{background:var(--cktr-card)!important}
   margin-left:auto!important; margin-right:0!important;
 }
 </style>
+
+<style id="cktr-etiqueta-compacta-v18">
+/* A ficha impressa prioriza a descrição. O QR permanece grande o bastante para leitura. */
+.label .label-head{height:calc(7.1mm * var(--label-font-scale))!important;padding-inline:calc(1.6mm * var(--label-font-scale))!important}
+.label .label-head strong{font-size:calc(9pt * var(--label-font-scale))!important}
+.label .material-details{gap:calc(.45mm * var(--label-font-scale))!important;padding:calc(.5mm * var(--label-font-scale)) calc(.4mm * var(--label-font-scale))!important}
+.label .material-details small{font-size:calc(5.7pt * var(--label-font-scale))!important;line-height:1.05!important}
+.label .material-details b{font-size:calc(11pt * var(--label-font-scale))!important;line-height:1.05!important}
+.label .material-details strong,.label.has-location .material-details strong{font-size:var(--cktr-desc-size,9pt)!important;line-height:1.08!important;overflow-wrap:anywhere!important;hyphens:auto!important}
+.label .label-location{gap:0!important;padding:calc(.6mm * var(--label-font-scale)) calc(.5mm * var(--label-font-scale))!important;max-height:16%!important}
+.label .label-location small{font-size:calc(5.7pt * var(--label-font-scale))!important}
+.label .label-location strong{font-size:calc(8.5pt * var(--label-font-scale))!important;line-height:1.07!important}
+.label .label-codes,.label.has-location .label-codes{height:39%!important;padding-top:calc(.6mm * var(--label-font-scale))!important}
+.label .label-foot{font-size:calc(6pt * var(--label-font-scale))!important;height:calc(3mm * var(--label-font-scale))!important}
+</style>
 </head>
 <body>
-<header class="cktr-header"><div class="cktr-brand"><div class="cktr-wordmark" aria-label="CKTR Serviços"><strong>CKTR</strong><small>SERVIÇOS</small></div><div class="cktr-brand-name"><strong><span>CENTRAL DE ETIQUETAS</span></strong><small>Gestão de identificação e impressão · Desenvolvido por Antonio</small></div></div><div class="cktr-header-right"><span class="cktr-online"><i></i> VERSÃO 1.6v</span><div class="theme-control"><label for="tema">Tema</label><select id="tema" aria-label="Aparência do site"><option value="light">Claro</option><option value="dark">Escuro</option><option value="system">Sistema</option></select></div></div></header>
+<header class="cktr-header"><div class="cktr-brand"><div class="cktr-wordmark" aria-label="CKTR Serviços"><strong>CKTR</strong><small>SERVIÇOS</small></div><div class="cktr-brand-name"><strong><span>CENTRAL DE ETIQUETAS</span></strong><small>Gestão de identificação e impressão · Desenvolvido por Antonio</small></div></div><div class="cktr-header-right"><span class="cktr-online"><i></i> VERSÃO 1.9v</span><div class="theme-control"><label for="tema">Tema</label><select id="tema" aria-label="Aparência do site"><option value="light">Claro</option><option value="dark">Escuro</option><option value="system">Sistema</option></select></div></div></header>
 <main class="cktr-layout"><aside class="cktr-sidebar"><div class="sidebar-title"><span class="sidebar-kicker">CENTRAL DE CONTROLE</span><h2>Configurações</h2><p>Prepare o lote, ajuste as dimensões e envie para impressão.</p></div>
   <div class="section-heading"><div><span class="section-kicker">01 / CONFIGURAÇÃO</span><h2>Preparar impressão</h2></div><span class="section-note">Importação e exportação de lote</span></div>
   <section class="panel" aria-label="Planilha e impressão">
@@ -301,7 +316,7 @@ html[data-theme="dark"] .cktr-header{background:var(--cktr-card)!important}
   </section>
   </aside><section class="cktr-content"><div class="workspace-top"><div><span class="sidebar-kicker">PAINEL DE PRODUÇÃO</span><h1>Prévia de etiquetas</h1><p>Confira os materiais recebidos pelo Power Apps ou importados por CSV. Cada QR Code abre a ficha digital do item.</p></div><div class="workspace-stats"><div><span>ETIQUETAS</span><strong id="metric-total">00</strong></div><div><span>MATERIAIS</span><strong id="metric-items">00</strong></div><div><span>FORMATO</span><strong id="metric-size">90 × 90</strong></div></div></div>
   <div class="results-bar"><div><span class="section-kicker">02 / CONFERÊNCIA</span><h2>Prévia do lote</h2></div><span id="total" class="total-chip" aria-live="polite">0 etiquetas</span></div>
-  <div id="vazio" class="empty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h10l8 8-9 9-9-9z"/><circle cx="8" cy="9" r="1.35"/></svg><p>Importe um CSV ou envie materiais pelo Power Apps para ver as etiquetas.</p></div>
+  <div id="vazio" class="empty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h10l8 8-9 9-9-9z"/><circle cx="8" cy="9" r="1.35"/></svg><p>Importe um CSV ou envie materiais pelo Power Apps para ver as etiquetas. A tabela de saldos é enviada apenas pelo Power Apps.</p></div>
   <div id="previa" class="preview" hidden><div class="labels" id="etiquetas"></div></div>
   <div id="print-block">Abra um lote válido e confira a prévia antes de imprimir.</div>
 </section></main>
@@ -1620,124 +1635,102 @@ function msg(s,err=false){status.hidden=false;status.textContent=s;status.classN
 function qrSvg(value){const qr=new CktrQR(-1,0);qr.addData(String(value));qr.make();const n=qr.getModuleCount(), svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox',`0 0 ${n+8} ${n+8}`);svg.setAttribute('role','img');svg.setAttribute('aria-label','QR para abrir a ficha digital do material');let d='';for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(qr.isDark(y,x))d+=`M${x+4} ${y+4}h1v1h-1z`;const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',d);svg.append(path);return svg;}
 function barcodeSvg(value){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 180 42');svg.setAttribute('aria-label','Código SAP em texto, não código de barras');const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x','90');t.setAttribute('y','27');t.setAttribute('text-anchor','middle');t.setAttribute('font-size','17');t.setAttribute('font-weight','bold');t.textContent=value;svg.append(t);return svg;}
 function makeLabel(item,qrLink){const card=document.createElement('article');card.className='label';if(item.Localizacao)card.classList.add('has-location');card.innerHTML=`<div class="label-head"><strong>CKTR | ALMOXARIFADO</strong></div><div class="label-main"><div class="material-details"><small>${esc(item.TipoCodigo === 'PN' ? 'PN:' : 'CÓDIGO SAP')}</small><b>${esc(item.CodigoSAP||'SEM CÓDIGO')}</b><small>DESCRIÇÃO</small><strong>${esc(item.Descricao||'SEM DESCRIÇÃO')}</strong></div></div>${item.Localizacao ? `<div class="label-location"><small>ENDEREÇO</small><strong>${esc(item.Localizacao)}</strong></div>` : ''}<div class="label-codes"><div class="qr-slot"></div><div class="sap-slot"></div></div><div class="label-foot"><span>ID: ${esc(item.ID)}</span></div>`;card.querySelector('.qr-slot').append(qrSvg(qrLink));const logo=document.createElement('img');logo.src='data:image/png;base64,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';logo.alt='CKTR Serviços';card.querySelector('.sap-slot').append(logo);return card;}
+function textoCampo(v){return v===null||v===undefined?'':String(v).trim();}
+function normalizarLinhaSaldo(o){
+  // Uma linha para cada registro do SharePoint. Não aplicar Distinct nem GroupBy.
+  if(Array.isArray(o))return o.slice(0,7).map(textoCampo);
+  if(!o||typeof o!=='object')return null;
+  return [
+    textoCampo(o.OM??o.om),
+    textoCampo(o.PEDIDO??o.Pedido),
+    textoCampo(o.RESERVA??o.Reserva),
+    textoCampo(o.SALDO_ITEM??o.QUANTIDADE??o.Quantidade),
+    textoCampo(o.PLANEJADOR??o.Planejador),
+    textoCampo(o.GERENCIA??o.Gerencia),
+    textoCampo(o.NUM_DOC_E??o.CodigoRequisicaoGMP)
+  ];
+}
 function normalize(o){
-  const photo=o.FotoPublica??o.FOTO_PUBLICA??o.Foto??o.FotoUrl??o.FOTO_URL??o.Foto_Item?.Full??'';
+  const recebido=o.Saldos??o.SALDOS??o.LinhasSaldo??o.SaldoItens;
   return {
-    ID:String(o.ID??o.id??'').trim(),
-    CodigoSAP:String(o.CodigoSAP??o.CODIGO_SAP??o.sap??'').trim(),
-    TipoCodigo:String(o.TipoCodigo??o.TIPO_CODIGO??'SAP').trim().toUpperCase()==='PN'?'PN':'SAP',
-    Descricao:String(o.Descricao??o.DESCRICAO??o.descricao??'').trim(),
-    Localizacao:String(o.Localizacao??o.LOCALIZACAO??o.localizacao??'').trim(),
-    Foto:String(photo||'').trim(),
-    ID_AREA:String(o.ID_AREA??1),
+    ID:textoCampo(o.ID??o.id),
+    CodigoSAP:textoCampo(o.CodigoSAP??o.CODIGO_SAP??o.sap),
+    TipoCodigo:textoCampo(o.TipoCodigo??o.TIPO_CODIGO??'SAP').toUpperCase()==='PN'?'PN':'SAP',
+    Descricao:textoCampo(o.Descricao??o.DESCRICAO??o.descricao),
+    Localizacao:textoCampo(o.Localizacao??o.LOCALIZACAO??o.localizacao),
+    // null significa "não enviado"; [] significa "consulta realizada, sem registros".
+    Saldos:Array.isArray(recebido)?recebido.map(normalizarLinhaSaldo).filter(Boolean):null,
+    ID_AREA:textoCampo(o.ID_AREA??1),
     QuantidadeEtiquetas:Math.min(100,Math.max(1,Number(o.QuantidadeEtiquetas??o.QUANTIDADE??1)||1))
   };
 }
 
-function pistaImagem(descricao){
-  const d=String(descricao||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-  const grupos=[
-    [/ROLAMENTO|BEARING/,'bearing'],[/CABO|CONDUTOR ELETRICO/,'electrical cable'],
-    [/DISJUNTOR/,'circuit breaker'],[/MOTOR/,'electric motor'],[/VALVULA/,'industrial valve'],
-    [/BOMBA/,'industrial pump'],[/FILTRO/,'industrial filter'],[/SENSOR/,'industrial sensor'],
-    [/CORREIA/,'industrial belt'],[/PARAFUSO/,'bolt'],[/CONTATOR/,'contactor'],
-    [/ENGRENAGEM/,'gear'],[/MANGUEIRA/,'hose'],[/CILINDRO/,'pneumatic cylinder'],
-    [/FUSIVEL/,'fuse'],[/ACOPLAMENTO/,'coupling'],[/TUBO/,'pipe'],
-    [/REDUTOR/,'gearbox'],[/RELE/,'relay'],[/BATERIA/,'battery']
-  ];
-  const categoria=grupos.find(([re])=>re.test(d))?.[1]||'';
-  const marcas=['SKF','FAG','NSK','NTN','TIMKEN','WEG','SIEMENS','SCHNEIDER','ABB','BOSCH','PARKER','FESTO','SMC','EATON','KSB','GRUNDFOS','DANFOSS','HONEYWELL','3M','ROCKWELL','EMERSON','METSO','CATERPILLAR','KOMATSU'];
-  const marca=marcas.find(m=>new RegExp('(^|[^A-Z0-9])'+m+'(?=$|[^A-Z0-9])').test(d))||
-    (d.match(/(?:FABRICANTE|MARCA|FORNECEDOR)\s*[:=\-]\s*([A-Z0-9][A-Z0-9 ._\/-]{1,24})/)?.[1]||'').split(/[;,|]/)[0].trim().split(/\s+/).slice(0,2).join(' ');
-  const modelo=d.match(/(?:MODELO|REFERENCIA|REF\.?|PART NUMBER|P\/N|PN)\s*[:=\-]\s*([A-Z0-9][A-Z0-9._\/-]{3,23})/)?.[1]||
-    (d.match(/\b[A-Z0-9][A-Z0-9._/-]{3,23}\b/g)||[]).find(x=>/\d/.test(x)&&/[A-Z]/.test(x)&&!/^\d+(?:MM2?|KV|KW|HZ|V|W|A|KG)\d*$/i.test(x))||'';
-  return [marca,modelo,categoria].filter(Boolean).join(' ').replace(/[^A-Z0-9 ._/-]/g,' ').replace(/\s+/g,' ').trim().slice(0,65);
-}
-
-// O QR leva uma ficha compactada: funciona sem banco de dados nem consulta ao SharePoint.
-// A fotografia precisa ser um URL HTTPS público e autorizado; imagens privadas não cabem no QR.
+// Os dados ficam no QR da etiqueta, sem acesso direto ao SharePoint.
+// AVISO: QR e URL são legíveis por qualquer pessoa que os tenha. Não usar com dados
+// corporativos confidenciais sem autorização. Não representa saldo em tempo real.
 const MATERIAL_PAGE='https://sys-ghost-dev.github.io/etiquetaCMP/material.html';
-const QR_MAX_CHARS=330;
-
-function fotoPublica(foto){
-  const valor=String(foto||'').trim();
-  if(!valor)return '';
-  try{
-    const url=/^(\.\/)?fotos\/[a-z0-9._/-]+$/i.test(valor)
-      ? new URL(valor,MATERIAL_PAGE)
-      : new URL(valor);
-    if(url.protocol!=='https:')return '';
-    if(/(^|\.)sharepoint\.com$/i.test(url.hostname))return '';
-    if(['token','access_token','sig','signature','se','sp','sv'].some(k=>url.searchParams.has(k)))return '';
-    return url.href;
-  }catch(e){return '';}
-}
-
+const QR_MAX_CHARS=550; // evita códigos excessivamente densos na etiqueta térmica
 function base64Url(bytes){
   let str='';
-  for(let i=0;i<bytes.length;i+=8192){
-    str+=String.fromCharCode(...bytes.subarray(i,i+8192));
-  }
+  for(let i=0;i<bytes.length;i+=8192)str+=String.fromCharCode(...bytes.subarray(i,i+8192));
   return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
-
 async function codificarFicha(obj){
   const json=JSON.stringify(obj);
   const url=new URL(MATERIAL_PAGE);
   if(typeof CompressionStream==='function'){
-    const fluxo=new Blob([json],{type:'application/json'}).stream()
-      .pipeThrough(new CompressionStream('deflate'));
-    const bytes=new Uint8Array(await new Response(fluxo).arrayBuffer());
-    url.searchParams.set('z',base64Url(bytes));
+    const fluxo=new Blob([json],{type:'application/json'}).stream().pipeThrough(new CompressionStream('deflate'));
+    url.searchParams.set('z',base64Url(new Uint8Array(await new Response(fluxo).arrayBuffer())));
   }else{
-    // Compatibilidade com navegadores sem compressão nativa.
-    url.searchParams.set('dados',JSON.stringify({
-      ID:obj.i,CodigoSAP:obj.c,TipoCodigo:obj.t,Descricao:obj.d,
-      Localizacao:obj.l,Foto:obj.f||'',BuscaImagem:obj.q||''
-    }));
+    // Não se perde saldo no fallback: se não couber, a geração será bloqueada.
+    url.searchParams.set('dados',json);
   }
   return url.href;
 }
-
 async function linkFicha(item){
-  const foto=fotoPublica(item.Foto);
   const avisos=[];
-  if(item.Foto&&!foto)avisos.push('Foto privada ou URL inválida: não será exibida na ficha pública.');
-  const base={i:item.ID,c:item.CodigoSAP,t:item.TipoCodigo,d:item.Descricao,l:item.Localizacao};
-  const dica=pistaImagem(item.Descricao);
-  if(dica)base.q=dica;
-  if(foto)base.f=foto;
-  const limites=[Infinity,250,180,120,80,40];
-  let url='';
-  let descricaoReduzida=false;
-  for(const limite of limites){
-    const objeto={...base,d:base.d.slice(0,limite)};
-    url=await codificarFicha(objeto);
-    descricaoReduzida=limite!==Infinity&&base.d.length>limite;
-    if(url.length<=QR_MAX_CHARS)break;
+  const base={v:2,i:item.ID,c:item.CodigoSAP,t:item.TipoCodigo,d:item.Descricao,l:item.Localizacao};
+  if(item.Saldos!==null){
+    base.s=item.Saldos; // todos os registros, inclusive OM/PEDIDO/RESERVA repetidos
+    base.a=new Date().toISOString();
+  }else avisos.push('Power Apps ainda não enviou as linhas de saldo para este material.');
+  // A ficha preserva a descrição completa e TODAS as linhas de saldo.
+  // Se não couber no QR, interrompe a impressão em vez de ocultar informações.
+  const url=await codificarFicha(base);
+  if(url.length>QR_MAX_CHARS){
+    throw Error('Material ID '+item.ID+': dados demais para um QR Code legível ('+
+      (item.Saldos?.length??0)+' linhas de saldo, '+url.length+' caracteres). '+
+      'Nenhuma linha nem parte da descrição será omitida. Para muitos registros, '+
+      'é necessária uma consulta interna autenticada por ID.');
   }
-  if(url.length>QR_MAX_CHARS&&base.f){
-    // Evita um QR excessivamente denso quando a URL pública da foto é longa.
-    delete base.f;
-    avisos.push('URL da foto extensa demais para o QR: foto não incluída.');
-    for(const limite of limites){
-      url=await codificarFicha({...base,d:base.d.slice(0,limite)});
-      descricaoReduzida=limite!==Infinity&&base.d.length>limite;
-      if(url.length<=QR_MAX_CHARS)break;
-    }
-  }
-  if(url.length>QR_MAX_CHARS&&base.q){
-    delete base.q;
-    avisos.push('Busca por fabricante/modelo simplificada para manter o QR legível.');
-    for(const limite of limites){
-      url=await codificarFicha({...base,d:base.d.slice(0,limite)});
-      descricaoReduzida=limite!==Infinity&&base.d.length>limite;
-      if(url.length<=QR_MAX_CHARS)break;
-    }
-  }
-  if(descricaoReduzida)avisos.push('Descrição abreviada no QR; a etiqueta impressa permanece completa.');
-  if(url.length>QR_MAX_CHARS)avisos.push('QR muito denso: teste a leitura com a câmera antes de imprimir.');
+  if(url.length>420)avisos.push('QR de alta densidade ('+url.length+' caracteres): teste com a câmera antes da impressão definitiva.');
   return {url,avisos};
+}
+
+// Ajuste proporcional da descrição para evitar corte visual na etiqueta.
+function ajustarDescricaoEtiqueta(card){
+  const details=card.querySelector('.material-details');
+  const desc=details?.querySelector('strong');
+  if(!details||!desc||details.clientHeight<5)return false;
+  const css=getComputedStyle(details),gap=parseFloat(css.rowGap)||0;
+  const padding=(parseFloat(css.paddingTop)||0)+(parseFloat(css.paddingBottom)||0);
+  const siblings=Array.from(details.children).filter(x=>x!==desc);
+  const occupied=siblings.reduce((sum,el)=>sum+el.getBoundingClientRect().height,0);
+  const available=details.clientHeight-padding-occupied-gap*(details.children.length-1)-2;
+  const scale=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--label-font-scale'))||1;
+  let pt=10*scale;
+  for(;pt>=5.2*scale;pt-=.35*scale){
+    desc.style.setProperty('--cktr-desc-size',pt.toFixed(2)+'pt');
+    if(desc.scrollHeight<=available+1)return true;
+  }
+  desc.style.setProperty('--cktr-desc-size',(5.2*scale).toFixed(2)+'pt');
+  return desc.scrollHeight<=available+1;
+}
+function ajustarTodasDescricoes(){
+  if($('previa').hidden)return;
+  let cortes=0;
+  for(const card of labels.querySelectorAll('.label'))if(!ajustarDescricaoEtiqueta(card))cortes++;
+  return cortes;
 }
 
 let renderId=0;
@@ -1764,6 +1757,8 @@ async function render(){
     if(atual!==renderId)return;
     $('vazio').hidden=!!count;
     $('previa').hidden=!count;
+    const cortes=ajustarTodasDescricoes();
+    if(cortes)avisos.push(cortes+' etiqueta(s) com descrição longa demais para o espaço físico: confira a prévia antes de imprimir.');
     $('total').textContent=count+' etiqueta(s)';
     $('metric-total').textContent=String(count).padStart(2,'0');
     $('metric-items').textContent=String(items.length).padStart(2,'0');
@@ -1783,12 +1778,12 @@ async function render(){
 }
 
 function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
-function csv(){const rows=[['ID','CODIGO_SAP','TIPO_CODIGO','DESCRICAO','ID_AREA','QUANTIDADE','LOCALIZACAO','FOTO_PUBLICA'],...items.map(i=>[i.ID,i.CodigoSAP,i.TipoCodigo,i.Descricao,i.ID_AREA,i.QuantidadeEtiquetas,i.Localizacao,i.Foto])];return '\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');}
+function csv(){const rows=[['ID','CODIGO_SAP','TIPO_CODIGO','DESCRICAO','ID_AREA','QUANTIDADE','LOCALIZACAO'],...items.map(i=>[i.ID,i.CodigoSAP,i.TipoCodigo,i.Descricao,i.ID_AREA,i.QuantidadeEtiquetas,i.Localizacao])];return '\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');}
 function parseCsv(text){const out=[],rows=[];let row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++;}else quoted=!quoted;}else if(c===';'&&!quoted){row.push(cell);cell='';}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell='';}else cell+=c;}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);const headers=(rows.shift()||[]).map(x=>x.replace(/^\uFEFF/,'').trim().toUpperCase());for(const r of rows){const o={};headers.forEach((h,i)=>o[h]=r[i]||'');out.push(normalize(o));}return out;}
-$('exportar').textContent='Baixar planilha CSV';$('exportar').addEventListener('click',()=>download('Etiquetas-CKTR.csv',items.length?csv():'\uFEFFID;CODIGO_SAP;TIPO_CODIGO;DESCRICAO;ID_AREA;QUANTIDADE;LOCALIZACAO;FOTO_PUBLICA\r\n','text/csv;charset=utf-8'));
+$('exportar').textContent='Baixar planilha CSV';$('exportar').addEventListener('click',()=>download('Etiquetas-CKTR.csv',items.length?csv():'\uFEFFID;CODIGO_SAP;TIPO_CODIGO;DESCRICAO;ID_AREA;QUANTIDADE;LOCALIZACAO\r\n','text/csv;charset=utf-8'));
 $('importar').textContent='Importar planilha CSV';input.setAttribute('accept','.csv,text/csv');$('importar').addEventListener('click',()=>input.click());input.addEventListener('change',async()=>{try{const file=input.files[0];if(!file)return;items=parseCsv(await file.text());if(!items.length)throw Error('Arquivo sem materiais.');await render();}catch(e){msg(e.message,true);}finally{input.value='';}});
 $('largura').value=90;$('altura').value=90;$('largura').min=30;$('altura').min=30;
-function sizing(){const w=Number($('largura').value),h=Number($('altura').value);if(!Number.isFinite(w)||!Number.isFinite(h)||w<30||w>420||h<30||h>420)return false;document.documentElement.style.setProperty('--label-w',w+'mm');document.documentElement.style.setProperty('--label-h',h+'mm');const scale=Math.max(.78,Math.min(3.1,Math.min(w/90,h/90)));document.documentElement.style.setProperty('--label-font-scale',scale.toFixed(3));document.documentElement.style.setProperty('--label-qr-size',Math.min(78,Math.max(18,Math.min(w,h)*.27)).toFixed(1)+'mm');$('page-size').textContent=`@page{size:${w}mm ${h}mm;margin:0}`;$('metric-size').textContent=`${w} × ${h}`;return true;}
+function sizing(){const w=Number($('largura').value),h=Number($('altura').value);if(!Number.isFinite(w)||!Number.isFinite(h)||w<30||w>420||h<30||h>420)return false;document.documentElement.style.setProperty('--label-w',w+'mm');document.documentElement.style.setProperty('--label-h',h+'mm');const scale=Math.max(.78,Math.min(3.1,Math.min(w/90,h/90)));document.documentElement.style.setProperty('--label-font-scale',scale.toFixed(3));document.documentElement.style.setProperty('--label-qr-size',Math.min(85,Math.max(20,Math.min(w,h)*.36)).toFixed(1)+'mm');$('page-size').textContent=`@page{size:${w}mm ${h}mm;margin:0}`;$('metric-size').textContent=`${w} × ${h}`;ajustarTodasDescricoes();return true;}
 const formats={'90x90':[90,90],'70x70':[70,70],'100x100':[100,100],a4p:[210,297],a4l:[297,210],a3p:[297,420],a3l:[420,297]};
 const format=$('papel'),theme=$('tema');
 // Nova chave: não herda a configuração incorreta das versões anteriores.
@@ -1823,7 +1818,7 @@ function imprimirSomenteEtiquetas(){
   if(!cards.length){msg('Não existem etiquetas para imprimir.',true);return;}
   const w=Number($('largura').value),h=Number($('altura').value);
   const scale=Math.max(.78,Math.min(3.1,Math.min(w/90,h/90)));
-  const qr=Math.min(78,Math.max(18,Math.min(w,h)*.27));
+  const qr=Math.min(85,Math.max(20,Math.min(w,h)*.36));
   const iframe=document.createElement('iframe');
   iframe.setAttribute('title','Impressão exclusiva de etiquetas CKTR');
   iframe.setAttribute('aria-hidden','true');
