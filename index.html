@@ -1636,40 +1636,83 @@ function qrSvg(value){const qr=new CktrQR(-1,0);qr.addData(String(value));qr.mak
 function barcodeSvg(value){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 180 42');svg.setAttribute('aria-label','Código SAP em texto, não código de barras');const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x','90');t.setAttribute('y','27');t.setAttribute('text-anchor','middle');t.setAttribute('font-size','17');t.setAttribute('font-weight','bold');t.textContent=value;svg.append(t);return svg;}
 function makeLabel(item,qrLink){const card=document.createElement('article');card.className='label';if(item.Localizacao)card.classList.add('has-location');card.innerHTML=`<div class="label-head"><strong>CKTR | ALMOXARIFADO</strong></div><div class="label-main"><div class="material-details"><small>${esc(item.TipoCodigo === 'PN' ? 'PN:' : 'CÓDIGO SAP')}</small><b>${esc(item.CodigoSAP||'SEM CÓDIGO')}</b><small>DESCRIÇÃO</small><strong>${esc(item.Descricao||'SEM DESCRIÇÃO')}</strong></div></div>${item.Localizacao ? `<div class="label-location"><small>ENDEREÇO</small><strong>${esc(item.Localizacao)}</strong></div>` : ''}<div class="label-codes"><div class="qr-slot"></div><div class="sap-slot"></div></div><div class="label-foot"><span>ID: ${esc(item.ID)}</span></div>`;card.querySelector('.qr-slot').append(qrSvg(qrLink));const logo=document.createElement('img');logo.src='data:image/png;base64,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';logo.alt='CKTR Serviços';card.querySelector('.sap-slot').append(logo);return card;}
 function textoCampo(v){return v===null||v===undefined?'':String(v).trim();}
-function normalizarLinhaSaldo(o){
-  // Uma linha para cada registro do SharePoint. Não aplicar Distinct nem GroupBy.
-  if(Array.isArray(o))return o.slice(0,7).map(textoCampo);
-  if(!o||typeof o!=='object')return null;
-  return [
-    textoCampo(o.OM??o.om),
-    textoCampo(o.PEDIDO??o.Pedido),
-    textoCampo(o.RESERVA??o.Reserva),
-    textoCampo(o.SALDO_ITEM??o.QUANTIDADE??o.Quantidade),
-    textoCampo(o.PLANEJADOR??o.Planejador),
-    textoCampo(o.GERENCIA??o.Gerencia),
-    textoCampo(o.NUM_DOC_E??o.CodigoRequisicaoGMP)
-  ];
+function numeroSeguro(valor){
+  if(typeof valor==='number')return Number.isFinite(valor)?valor:0;
+  const texto=String(valor??'').trim().replace(/\s/g,'');
+  if(!texto)return 0;
+  const ajustado=texto.includes(',')?texto.replace(/\./g,'').replace(',','.'):texto;
+  const n=Number(ajustado);
+  return Number.isFinite(n)?n:0;
+}
+function unico(valores){
+  const vistos=new Set(),out=[];
+  for(const v of valores){const s=textoCampo(v);const chave=s.toLocaleUpperCase('pt-BR');if(s&&!vistos.has(chave)){vistos.add(chave);out.push(s)}}
+  return out;
+}
+function classificacaoNormalizada(valor){
+  if(valor==null)return '';
+  if(typeof valor==='object')return classificacaoNormalizada(valor.Value??valor.value??valor.Valor??'');
+  let v=textoCampo(valor);
+  if((v.startsWith('{')&&v.endsWith('}'))||(v.startsWith('"')&&v.endsWith('"'))){
+    try{return classificacaoNormalizada(JSON.parse(v))}catch(e){}
+  }
+  v=v.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+  if(v.includes('INVESTIMENTO'))return 'INVESTIMENTO';
+  if(v.includes('CUSTEIO'))return 'CUSTEIO';
+  return '';
+}
+function normalizarResumo(r){
+  if(!r||typeof r!=='object')return null;
+  const lista=campo=>Array.isArray(campo)?campo:[];
+  const req=unico(lista(r.Requisicoes??r.requisicoes??r.e).map(x=>textoCampo(x?.Codigo??x?.Value??x)));
+  const plans=[],vistos=new Set();
+  for(const p of lista(r.Planejadores??r.planejadores??r.p)){
+    const nome=textoCampo(p?.Nome??p?.nome??(Array.isArray(p)?p[0]:p));
+    const gerencia=textoCampo(p?.Gerencia??p?.GERENCIA??p?.gerencia??(Array.isArray(p)?p[1]:''));
+    const chave=(nome+'|'+gerencia).toLocaleUpperCase('pt-BR');
+    if(nome&&!vistos.has(chave)){vistos.add(chave);plans.push([nome,gerencia])}
+  }
+  const classes=unico(lista(r.Classificacoes??r.classificacoes??r.k).map(x=>classificacaoNormalizada(x?.Valor??x?.Value??x))).filter(Boolean);
+  return {
+    total:numeroSeguro(r.SaldoTotal??r.Total??r.total??r.q),
+    registros:Math.max(0,Number(r.QuantidadeRegistros??r.Registros??r.registros??r.n)||0),
+    requisicoes:req,
+    planejadores:plans,
+    classificacoes:classes
+  };
+}
+function resumoLegado(linhas){
+  if(!Array.isArray(linhas))return null;
+  const req=[],plan=[],classes=[];
+  let total=0;
+  for(const linha of linhas){
+    const l=Array.isArray(linha)?linha:[linha.OM,linha.PEDIDO,linha.RESERVA,linha.SALDO_ITEM??linha.QUANTIDADE,linha.PLANEJADOR,linha.GERENCIA,linha.NUM_DOC_E,linha.CLASSIFICACAO];
+    total+=numeroSeguro(l[3]);
+    req.push(l[6]);
+    if(textoCampo(l[4]))plan.push({Nome:l[4],Gerencia:l[5]});
+    classes.push(l[7]);
+  }
+  return normalizarResumo({SaldoTotal:total,QuantidadeRegistros:linhas.length,Requisicoes:req,Planejadores:plan,Classificacoes:classes});
 }
 function normalize(o){
-  const recebido=o.Saldos??o.SALDOS??o.LinhasSaldo??o.SaldoItens;
+  const recebido=o.ResumoSaldo??o.RESUMO_SALDO??o.Resumo??o.ResumoSaldos;
+  const linhas=o.Saldos??o.SALDOS??o.LinhasSaldo??o.SaldoItens;
   return {
     ID:textoCampo(o.ID??o.id),
     CodigoSAP:textoCampo(o.CodigoSAP??o.CODIGO_SAP??o.sap),
     TipoCodigo:textoCampo(o.TipoCodigo??o.TIPO_CODIGO??'SAP').toUpperCase()==='PN'?'PN':'SAP',
     Descricao:textoCampo(o.Descricao??o.DESCRICAO??o.descricao),
     Localizacao:textoCampo(o.Localizacao??o.LOCALIZACAO??o.localizacao),
-    // null significa "não enviado"; [] significa "consulta realizada, sem registros".
-    Saldos:Array.isArray(recebido)?recebido.map(normalizarLinhaSaldo).filter(Boolean):null,
+    ResumoSaldo:recebido?normalizarResumo(recebido):resumoLegado(linhas),
     ID_AREA:textoCampo(o.ID_AREA??1),
     QuantidadeEtiquetas:Math.min(100,Math.max(1,Number(o.QuantidadeEtiquetas??o.QUANTIDADE??1)||1))
   };
 }
 
-// Os dados ficam no QR da etiqueta, sem acesso direto ao SharePoint.
-// AVISO: QR e URL são legíveis por qualquer pessoa que os tenha. Não usar com dados
-// corporativos confidenciais sem autorização. Não representa saldo em tempo real.
+// QR público: dados são uma fotografia do saldo na data da exportação,
+// não uma consulta em tempo real. Publicar apenas dados corporativos autorizados.
 const MATERIAL_PAGE='https://sys-ghost-dev.github.io/etiquetaCMP/material.html';
-const QR_MAX_CHARS=550; // evita códigos excessivamente densos na etiqueta térmica
+const QR_MAX_CHARS=550;
 function base64Url(bytes){
   let str='';
   for(let i=0;i<bytes.length;i+=8192)str+=String.fromCharCode(...bytes.subarray(i,i+8192));
@@ -1682,28 +1725,26 @@ async function codificarFicha(obj){
     const fluxo=new Blob([json],{type:'application/json'}).stream().pipeThrough(new CompressionStream('deflate'));
     url.searchParams.set('z',base64Url(new Uint8Array(await new Response(fluxo).arrayBuffer())));
   }else{
-    // Não se perde saldo no fallback: se não couber, a geração será bloqueada.
     url.searchParams.set('dados',json);
   }
   return url.href;
 }
 async function linkFicha(item){
   const avisos=[];
-  const base={v:2,i:item.ID,c:item.CodigoSAP,t:item.TipoCodigo,d:item.Descricao,l:item.Localizacao};
-  if(item.Saldos!==null){
-    base.s=item.Saldos; // todos os registros, inclusive OM/PEDIDO/RESERVA repetidos
+  const base={v:3,i:item.ID,c:item.CodigoSAP,t:item.TipoCodigo,d:item.Descricao,l:item.Localizacao};
+  if(item.ResumoSaldo){
+    const r=item.ResumoSaldo;
+    // Formato posicional reduz o QR sem eliminar valores.
+    base.r=[r.total,r.registros,r.requisicoes,r.planejadores,r.classificacoes];
     base.a=new Date().toISOString();
-  }else avisos.push('Power Apps ainda não enviou as linhas de saldo para este material.');
-  // A ficha preserva a descrição completa e TODAS as linhas de saldo.
-  // Se não couber no QR, interrompe a impressão em vez de ocultar informações.
+  }else avisos.push('O Power Apps ainda não enviou o resumo de saldo. Atualize o OnSelect do botão de exportação.');
   const url=await codificarFicha(base);
   if(url.length>QR_MAX_CHARS){
-    throw Error('Material ID '+item.ID+': dados demais para um QR Code legível ('+
-      (item.Saldos?.length??0)+' linhas de saldo, '+url.length+' caracteres). '+
-      'Nenhuma linha nem parte da descrição será omitida. Para muitos registros, '+
-      'é necessária uma consulta interna autenticada por ID.');
+    throw Error('Material ID '+item.ID+': resumo ainda excede o limite do QR ('+url.length+' caracteres). '+
+      'Existem códigos/nomes ou descrição demais para esta etiqueta. '+
+      'Nenhum dado foi removido. Gere a ficha por consulta interna autenticada para volumes maiores.');
   }
-  if(url.length>420)avisos.push('QR de alta densidade ('+url.length+' caracteres): teste com a câmera antes da impressão definitiva.');
+  if(url.length>450)avisos.push('QR com '+url.length+' caracteres: confira a leitura pela câmera antes da impressão definitiva.');
   return {url,avisos};
 }
 
