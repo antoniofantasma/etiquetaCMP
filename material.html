@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#075b55">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src https: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src https: data:; connect-src 'self' https://commons.wikimedia.org; base-uri 'none'; form-action 'none'">
 <title>Ficha Digital do Material | CKTR</title>
 <style>
 :root{color-scheme:light;--teal:#08766d;--dark:#073d38;--text:#173a36;--muted:#647d77;--line:#dbe8e2;font-family:Inter,'Segoe UI',Arial,sans-serif}
@@ -39,6 +39,11 @@ h2{font-size:21px;letter-spacing:-.035em;margin:17px 0 14px}
 .botao{display:block;text-decoration:none;text-align:center;background:#08766d;color:white;padding:15px;border-radius:10px;font-weight:750;margin-top:23px}
 .erro{color:#943d36;background:#fff0ee;border-color:#f3d5d0;line-height:1.7}
 footer{text-align:center;color:#81978c;font-size:11px;padding:10px 15px 30px;letter-spacing:.07em}
+
+.foto-referencia{margin:-12px 0 23px;font-size:12px;line-height:1.55;color:#617d72;background:#f3faf6;border:1px solid #dbe9e1;padding:12px 14px;border-radius:10px}
+.foto-referencia strong{display:block;color:#0b5d51;margin-bottom:4px}
+.foto-referencia a,.buscar-foto{color:#08766d;font-weight:750;text-underline-offset:3px;overflow-wrap:anywhere}
+.buscar-foto{display:inline-block;font-size:12px;margin:-7px 0 20px}
 @media(max-width:540px){header{padding-bottom:78px}.card{padding:18px}.foto{height:220px}.grid{grid-template-columns:1fr auto}.id{font-size:12px}}
 </style>
 </head>
@@ -60,6 +65,13 @@ footer{text-align:center;color:#81978c;font-size:11px;padding:10px 15px 30px;let
           <span id="textoSemFoto">Foto não disponível para consulta pública</span>
         </div>
       </div>
+      <div class="foto-referencia" id="fotoReferencia" hidden>
+        <strong id="fotoStatus">Imagem de referência da internet</strong>
+        <span id="fotoCredito"></span>
+        <a id="fonteFoto" target="_blank" rel="noopener noreferrer" hidden>Ver fonte e licença</a>
+        <div>Imagem ilustrativa: confirme o material pelo código SAP/PN e pelas especificações técnicas.</div>
+      </div>
+      <a class="buscar-foto" id="buscarFoto" target="_blank" rel="noopener noreferrer" hidden>Pesquisar imagens de referência</a>
       <div class="grid">
         <div><div class="kicker" id="tipoCodigo">CÓDIGO SAP</div><div class="codigo" id="codigo">—</div></div>
         <div><div class="kicker">ID</div><div class="id" id="idMaterial">—</div></div>
@@ -88,18 +100,162 @@ footer{text-align:center;color:#81978c;font-size:11px;padding:10px 15px 30px;let
 'use strict';
 const params=new URLSearchParams(location.search);
 const $=id=>document.getElementById(id);
+const GMP_URL="https://apps.powerapps.com/play/e/default-7893571b-6c2c-4cef-b4da-7d4b266a0626/a/b92c9e4c-d087-4eab-a810-0657857e19c5?tenantId=7893571b-6c2c-4cef-b4da-7d4b266a0626&hint=1c6c957c-f761-4cf1-8e24-521d4380711d&sourcetime=1695380334247&source=portal&skipMobileRedirect=1";
 const orientacaoPadrao='Para requisitar este item, acesse o sistema GMP, aplicativo interno de controle de materiais. Nele, você poderá consultar a quantidade individual e consolidada de cada item e, posteriormente, realizar a requisição do material desejado.';
+const categorias=[
+  [/ROLAMENTO|BEARING/, 'bearing'],
+  [/CABO|CONDUTOR ELETRICO|WIRE/, 'electrical cable'],
+  [/DISJUNTOR|CIRCUIT BREAKER/, 'circuit breaker'],
+  [/MOTOR ELETRICO|MOTOR/, 'electric motor'],
+  [/VALVULA|VALVE/, 'industrial valve'],
+  [/BOMBA|PUMP/, 'industrial pump'],
+  [/FILTRO|FILTER/, 'industrial filter'],
+  [/SENSOR|TRANSDUTOR/, 'industrial sensor'],
+  [/CORREIA|BELT/, 'industrial belt'],
+  [/PARAFUSO|BOLT/, 'bolt'],
+  [/CONTATOR|CONTACTOR/, 'contactor'],
+  [/ENGRENAGEM|GEAR/, 'gear'],
+  [/MANGUEIRA|HOSE/, 'hose'],
+  [/CILINDRO|CYLINDER/, 'pneumatic cylinder'],
+  [/FUSIVEL|FUSE/, 'fuse'],
+  [/ACOPLAMENTO|COUPLING/, 'coupling'],
+  [/TUBO|PIPE/, 'pipe'],
+  [/REDUTOR|GEARBOX/, 'gearbox'],
+  [/RELE|RELAY/, 'relay'],
+  [/BATERIA|BATTERY/, 'battery'],
+  [/ROLANA|POLIA|PULLEY/, 'pulley'],
+  [/LAMPADA|LAMP/, 'industrial lamp']
+];
+const marcas=['SKF','FAG','NSK','NTN','TIMKEN','WEG','SIEMENS','SCHNEIDER','ABB','BOSCH','PARKER','FESTO','SMC','EATON','KSB','GRUNDFOS','DANFOSS','HONEYWELL','3M','ROCKWELL','ALLEN BRADLEY','EMERSON','VONDER','DEWALT','MAKITA','METSO','ATLAS COPCO','CATERPILLAR','KOMATSU'];
 function texto(v,padrao='Não informado'){return v===null||v===undefined||!String(v).trim()?padrao:String(v).trim();}
+function semAcento(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();}
+function buscaSegura(v){return semAcento(v).replace(/[^A-Z0-9 ._/-]/g,' ').replace(/\s+/g,' ').trim().slice(0,75);}
 function imagemPermitida(valor){
   if(typeof valor!=='string'||!valor.trim())return '';
   try{
     const u=new URL(valor,location.href);
     if(u.protocol!=='https:')return '';
     if(/(^|\.)sharepoint\.com$/i.test(u.hostname))return '';
+    if(['token','access_token','sig','signature','se','sp','sv'].some(k=>u.searchParams.has(k)))return '';
     return u.href;
   }catch(e){return '';}
 }
-function erro(mensagem){$('carregamento').className='card erro';$('carregamento').textContent=mensagem;$('carregamento').hidden=false;$('conteudo').hidden=true;}
+function identificarBusca(obj){
+  const d=semAcento(texto(obj.d??obj.Descricao??obj.Descricao_Item,''));
+  const dica=buscaSegura(obj.q??obj.BuscaImagem??'');
+  const categoria=categorias.find(([padrao])=>padrao.test(d+' '+dica))?.[1]||'';
+  const marcaConhecida=marcas.find(m=>new RegExp('(^|[^A-Z0-9])'+m.replace(/ /g,'\\s+')+'(?=$|[^A-Z0-9])').test(d+' '+dica))||'';
+  const marcaDeclarada=d.match(/(?:FABRICANTE|MARCA|FORNECEDOR)\s*[:=\-]\s*([A-Z0-9][A-Z0-9 ._\/-]{1,24})/)?.[1]?.split(/[;,|]/)[0]?.trim().split(/\s+/).slice(0,2).join(' ')||'';
+  const marca=marcaConhecida||marcaDeclarada;
+  const modeloDeclarado=d.match(/(?:MODELO|REFERENCIA|REF\.?|PART NUMBER|P\/N|PN)\s*[:=\-]\s*([A-Z0-9][A-Z0-9._\/-]{3,23})/)?.[1]||'';
+  const palavras=(dica+' '+d).match(/\b[A-Z0-9][A-Z0-9._/-]{3,23}\b/g)||[];
+  const modeloDetectado=palavras.find(x=>/\d/.test(x)&&/[A-Z]/.test(x)&&!/^\d+(?:MM2?|KV|KW|HZ|V|W|A|KG|CM|M)\d*$/i.test(x))||'';
+  const modelo=modeloDeclarado||modeloDetectado;
+  const query=buscaSegura(dica||[marca,modelo,categoria].filter(Boolean).join(' '));
+  return {query,modelo,marca,categoria};
+}
+function limparHTML(valor){
+  const doc=new DOMParser().parseFromString(String(valor||''),'text/html');
+  return (doc.body.textContent||'').replace(/\s+/g,' ').trim();
+}
+function mostrarErro(mensagem){$('carregamento').className='card erro';$('carregamento').textContent=mensagem;$('carregamento').hidden=false;$('conteudo').hidden=true;}
+function mensagemFoto(mensagem,consulta=''){
+  $('fotoMaterial').hidden=true;
+  $('semFoto').hidden=false;
+  $('textoSemFoto').textContent=mensagem;
+  $('fotoReferencia').hidden=true;
+  const link=$('buscarFoto');
+  if(consulta){
+    link.href='https://commons.wikimedia.org/w/index.php?'+new URLSearchParams({search:consulta,title:'Special:MediaSearch',type:'image'});
+    link.hidden=false;
+  }else link.hidden=true;
+}
+function exibirFoto(url,detalhes){
+  const img=$('fotoMaterial');
+  img.onload=()=>{
+    img.hidden=false;$('semFoto').hidden=true;
+    $('buscarFoto').hidden=true;
+    $('fotoReferencia').hidden=false;
+    $('fotoStatus').textContent=detalhes.titulo;
+    $('fotoCredito').textContent=detalhes.credito||'';
+    const fonte=$('fonteFoto');
+    fonte.hidden=!detalhes.fonte;
+    if(detalhes.fonte)fonte.href=detalhes.fonte;
+  };
+  img.onerror=()=>mensagemFoto('Não foi possível carregar a imagem.',detalhes.consulta||'');
+  img.src=url;
+}
+function validoCommons(url){
+  try{const u=new URL(url);return u.protocol==='https:'&&(/(^|\.)wikimedia\.org$/.test(u.hostname));}
+  catch(e){return false;}
+}
+async function consultarCommons(consulta,modelo='',categoria='',exigirModelo=false){
+  const p=new URLSearchParams({action:'query',generator:'search',gsrsearch:consulta,gsrnamespace:'6',gsrlimit:'12',prop:'imageinfo',iiprop:'url|mime|extmetadata',iiurlwidth:'720',format:'json',formatversion:'2',origin:'*'});
+  const controller=new AbortController();
+  const tempo=setTimeout(()=>controller.abort(),6500);
+  let dados;
+  try{
+    const r=await fetch('https://commons.wikimedia.org/w/api.php?'+p,{signal:controller.signal,credentials:'omit'});
+    if(!r.ok)throw Error('Busca indisponível');
+    dados=await r.json();
+  }finally{clearTimeout(tempo);}
+  const arquivos=dados.query?.pages||[];
+  const alvoModelo=semAcento(modelo).replace(/[^A-Z0-9]/g,'');
+  const palavrasCategoria=semAcento(categoria).split(/\s+/).filter(x=>x.length>=4);
+  const resultados=[];
+  for(const a of arquivos){
+    const info=a.imageinfo?.[0];
+    if(!info||!/^image\/(jpeg|png|webp)$/i.test(info.mime||''))continue;
+    const url=info.thumburl||info.url;
+    if(!validoCommons(url))continue;
+    const nome=semAcento(a.title||'').replace(/^FILE:/,'');
+    if(/LOGO|ICON|FLAG|BANNER|DIAGRAM|SCHEMATIC|MAP|EMBLEM|COAT OF ARMS|SYMBOL|SCHEMA|DRAWING|WIRING/i.test(nome))continue;
+    const nomeCompacto=nome.replace(/[^A-Z0-9]/g,'');
+    const bateModelo=!!alvoModelo&&nomeCompacto.includes(alvoModelo);
+    if(exigirModelo&&!bateModelo)continue;
+    const bateCategoria=palavrasCategoria.some(t=>nome.includes(t));
+    const descricao=semAcento(limparHTML(info.extmetadata?.ImageDescription?.value||'')).slice(0,250);
+    const categoriaNaDescricao=palavrasCategoria.some(t=>descricao.includes(t));
+    if(!bateModelo&&!bateCategoria&&!categoriaNaDescricao)continue;
+    resultados.push({
+      url,
+      fonte:info.descriptionurl||'',
+      credito:[limparHTML(info.extmetadata?.Artist?.value||'').slice(0,85),limparHTML(info.extmetadata?.LicenseShortName?.value||'').slice(0,40)].filter(Boolean).join(' · '),
+      score:(bateModelo?12:0)+(bateCategoria?5:0)+(categoriaNaDescricao?1:0)
+    });
+  }
+  resultados.sort((a,b)=>b.score-a.score);
+  return resultados[0]||null;
+}
+async function buscarFotoAutomatica(obj){
+  const busca=identificarBusca(obj);
+  if(!busca.query&&!busca.categoria){mensagemFoto('Descrição sem informações suficientes para buscar uma imagem.');return;}
+  $('textoSemFoto').textContent='Buscando imagem de referência na internet...';
+  $('buscarFoto').hidden=true;
+  let resultado=null,especifico=false;
+  try{
+    if(busca.modelo){
+      resultado=await consultarCommons(busca.query,busca.modelo,busca.categoria,true);
+      especifico=!!resultado;
+    }
+    if(!resultado&&busca.categoria){
+      resultado=await consultarCommons(busca.categoria,'',busca.categoria,false);
+    }
+  }catch(e){
+    mensagemFoto('Busca automática indisponível no momento.',busca.query||busca.categoria);
+    return;
+  }
+  if(!resultado){
+    mensagemFoto('Nenhuma imagem de referência confiável foi encontrada.',busca.query||busca.categoria);
+    return;
+  }
+  exibirFoto(resultado.url,{
+    titulo:especifico?'Imagem localizada pelo modelo — identificação não verificada':'Imagem ilustrativa da categoria — não é confirmação do item',
+    credito:['Wikimedia Commons',resultado.credito].filter(Boolean).join(' · '),
+    fonte:resultado.fonte,
+    consulta:busca.query||busca.categoria
+  });
+}
 function ficha(obj){
   if(!obj||typeof obj!=='object'||Array.isArray(obj))throw Error('Dados do material inválidos.');
   const id=obj.i??obj.ID??obj.id;
@@ -115,21 +271,17 @@ function ficha(obj){
   $('orientacao').textContent=texto(obj.Orientacao,orientacaoPadrao);
   $('blocoLocal').hidden=!texto(local,'');
   $('localizacao').textContent=texto(local,'');
-  const img=$('fotoMaterial'),semFoto=$('semFoto');
-  img.hidden=true;semFoto.hidden=false;img.removeAttribute('src');
-  const endereco=imagemPermitida(foto);
-  if(endereco){
-    img.onload=()=>{img.hidden=false;semFoto.hidden=true;};
-    img.onerror=()=>{img.hidden=true;semFoto.hidden=false;$('textoSemFoto').textContent='Não foi possível carregar a fotografia';};
-    img.src=endereco;
-  }
   const link=$('botaoGMP');
-  const gmp=obj.UrlGMP;
-  if(typeof gmp==='string'&&/^https:\/\//i.test(gmp)){
-    link.href=gmp;link.hidden=false;
-  }else link.hidden=true;
+  link.href=GMP_URL;
+  link.hidden=false;
   $('carregamento').hidden=true;$('conteudo').hidden=false;
-  document.title='Material '+texto(codigo, String(id||''))+' | CKTR';
+  document.title='Material '+texto(codigo,String(id||''))+' | CKTR';
+  const fotoAutorizada=imagemPermitida(foto);
+  if(fotoAutorizada){
+    exibirFoto(fotoAutorizada,{titulo:'Imagem informada na ficha',credito:'Foto pública informada na geração da etiqueta',fonte:'',consulta:''});
+  }else{
+    buscarFotoAutomatica(obj).catch(()=>mensagemFoto('Não foi possível concluir a busca de imagens.'));
+  }
 }
 function decodificarBase64Url(s){
   if(!/^[A-Za-z0-9_-]+$/.test(s))throw Error('Código QR inválido.');
@@ -157,7 +309,7 @@ async function iniciar(){
       obj=await resposta.json();
     }else throw Error('Nenhum material informado. Escaneie o QR Code de uma etiqueta válida.');
     ficha(obj);
-  }catch(e){erro('Não foi possível abrir a ficha digital: '+(e.message||'Erro desconhecido.'));}
+  }catch(e){mostrarErro('Não foi possível abrir a ficha digital: '+(e.message||'Erro desconhecido.'));}
 }
 iniciar();
 </script>
