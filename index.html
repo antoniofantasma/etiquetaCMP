@@ -1634,6 +1634,26 @@ function normalize(o){
   };
 }
 
+function pistaImagem(descricao){
+  const d=String(descricao||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+  const grupos=[
+    [/ROLAMENTO|BEARING/,'bearing'],[/CABO|CONDUTOR ELETRICO/,'electrical cable'],
+    [/DISJUNTOR/,'circuit breaker'],[/MOTOR/,'electric motor'],[/VALVULA/,'industrial valve'],
+    [/BOMBA/,'industrial pump'],[/FILTRO/,'industrial filter'],[/SENSOR/,'industrial sensor'],
+    [/CORREIA/,'industrial belt'],[/PARAFUSO/,'bolt'],[/CONTATOR/,'contactor'],
+    [/ENGRENAGEM/,'gear'],[/MANGUEIRA/,'hose'],[/CILINDRO/,'pneumatic cylinder'],
+    [/FUSIVEL/,'fuse'],[/ACOPLAMENTO/,'coupling'],[/TUBO/,'pipe'],
+    [/REDUTOR/,'gearbox'],[/RELE/,'relay'],[/BATERIA/,'battery']
+  ];
+  const categoria=grupos.find(([re])=>re.test(d))?.[1]||'';
+  const marcas=['SKF','FAG','NSK','NTN','TIMKEN','WEG','SIEMENS','SCHNEIDER','ABB','BOSCH','PARKER','FESTO','SMC','EATON','KSB','GRUNDFOS','DANFOSS','HONEYWELL','3M','ROCKWELL','EMERSON','METSO','CATERPILLAR','KOMATSU'];
+  const marca=marcas.find(m=>new RegExp('(^|[^A-Z0-9])'+m+'(?=$|[^A-Z0-9])').test(d))||
+    (d.match(/(?:FABRICANTE|MARCA|FORNECEDOR)\s*[:=\-]\s*([A-Z0-9][A-Z0-9 ._\/-]{1,24})/)?.[1]||'').split(/[;,|]/)[0].trim().split(/\s+/).slice(0,2).join(' ');
+  const modelo=d.match(/(?:MODELO|REFERENCIA|REF\.?|PART NUMBER|P\/N|PN)\s*[:=\-]\s*([A-Z0-9][A-Z0-9._\/-]{3,23})/)?.[1]||
+    (d.match(/\b[A-Z0-9][A-Z0-9._/-]{3,23}\b/g)||[]).find(x=>/\d/.test(x)&&/[A-Z]/.test(x)&&!/^\d+(?:MM2?|KV|KW|HZ|V|W|A|KG)\d*$/i.test(x))||'';
+  return [marca,modelo,categoria].filter(Boolean).join(' ').replace(/[^A-Z0-9 ._/-]/g,' ').replace(/\s+/g,' ').trim().slice(0,65);
+}
+
 // O QR leva uma ficha compactada: funciona sem banco de dados nem consulta ao SharePoint.
 // A fotografia precisa ser um URL HTTPS público e autorizado; imagens privadas não cabem no QR.
 const MATERIAL_PAGE='https://sys-ghost-dev.github.io/etiquetaCMP/material.html';
@@ -1673,7 +1693,7 @@ async function codificarFicha(obj){
     // Compatibilidade com navegadores sem compressão nativa.
     url.searchParams.set('dados',JSON.stringify({
       ID:obj.i,CodigoSAP:obj.c,TipoCodigo:obj.t,Descricao:obj.d,
-      Localizacao:obj.l,Foto:obj.f||''
+      Localizacao:obj.l,Foto:obj.f||'',BuscaImagem:obj.q||''
     }));
   }
   return url.href;
@@ -1684,6 +1704,8 @@ async function linkFicha(item){
   const avisos=[];
   if(item.Foto&&!foto)avisos.push('Foto privada ou URL inválida: não será exibida na ficha pública.');
   const base={i:item.ID,c:item.CodigoSAP,t:item.TipoCodigo,d:item.Descricao,l:item.Localizacao};
+  const dica=pistaImagem(item.Descricao);
+  if(dica)base.q=dica;
   if(foto)base.f=foto;
   const limites=[Infinity,250,180,120,80,40];
   let url='';
@@ -1698,6 +1720,15 @@ async function linkFicha(item){
     // Evita um QR excessivamente denso quando a URL pública da foto é longa.
     delete base.f;
     avisos.push('URL da foto extensa demais para o QR: foto não incluída.');
+    for(const limite of limites){
+      url=await codificarFicha({...base,d:base.d.slice(0,limite)});
+      descricaoReduzida=limite!==Infinity&&base.d.length>limite;
+      if(url.length<=QR_MAX_CHARS)break;
+    }
+  }
+  if(url.length>QR_MAX_CHARS&&base.q){
+    delete base.q;
+    avisos.push('Busca por fabricante/modelo simplificada para manter o QR legível.');
     for(const limite of limites){
       url=await codificarFicha({...base,d:base.d.slice(0,limite)});
       descricaoReduzida=limite!==Infinity&&base.d.length>limite;
