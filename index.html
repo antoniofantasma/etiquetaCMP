@@ -268,9 +268,24 @@ html[data-theme="dark"] .cktr-header{background:var(--cktr-card)!important}
  .label .material-details strong{overflow-wrap:anywhere!important}
 }
 </style>
+
+<style id="cktr-logo-proportional-v16">
+/* The embedded CKTR PNG is only 151px wide; give it an explicit physical size. */
+.label .label-codes .sap-slot {
+  display:flex!important; flex:1!important; justify-content:flex-end!important; align-items:center!important; min-width:0!important; padding-right:calc(2mm * var(--label-font-scale))!important;
+}
+.label .label-codes .sap-slot img {
+  width:calc(29mm * var(--label-font-scale))!important;
+  max-width:100%!important;
+  height:auto!important;
+  max-height:calc(19mm * var(--label-font-scale))!important;
+  object-fit:contain!important; object-position:right center!important;
+  margin-left:auto!important; margin-right:0!important;
+}
+</style>
 </head>
 <body>
-<header class="cktr-header"><div class="cktr-brand"><div class="cktr-wordmark" aria-label="CKTR Serviços"><strong>CKTR</strong><small>SERVIÇOS</small></div><div class="cktr-brand-name"><strong><span>CENTRAL DE ETIQUETAS</span></strong><small>Gestão de identificação e impressão · Desenvolvido por Antonio</small></div></div><div class="cktr-header-right"><span class="cktr-online"><i></i> VERSÃO 1.5v · SISTEMA LOCAL</span><div class="theme-control"><label for="tema">Tema</label><select id="tema" aria-label="Aparência do site"><option value="light">Claro</option><option value="dark">Escuro</option><option value="system">Sistema</option></select></div></div></header>
+<header class="cktr-header"><div class="cktr-brand"><div class="cktr-wordmark" aria-label="CKTR Serviços"><strong>CKTR</strong><small>SERVIÇOS</small></div><div class="cktr-brand-name"><strong><span>CENTRAL DE ETIQUETAS</span></strong><small>Gestão de identificação e impressão · Desenvolvido por Antonio</small></div></div><div class="cktr-header-right"><span class="cktr-online"><i></i> VERSÃO 1.5v</span><div class="theme-control"><label for="tema">Tema</label><select id="tema" aria-label="Aparência do site"><option value="light">Claro</option><option value="dark">Escuro</option><option value="system">Sistema</option></select></div></div></header>
 <main class="cktr-layout"><aside class="cktr-sidebar"><div class="sidebar-title"><span class="sidebar-kicker">CENTRAL DE CONTROLE</span><h2>Configurações</h2><p>Prepare o lote, ajuste as dimensões e envie para impressão.</p></div>
   <div class="section-heading"><div><span class="section-kicker">01 / CONFIGURAÇÃO</span><h2>Preparar impressão</h2></div><span class="section-note">Importação e exportação de lote</span></div>
   <section class="panel" aria-label="Planilha e impressão">
